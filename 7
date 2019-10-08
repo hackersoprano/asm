@@ -1,0 +1,84 @@
+masm
+model small
+.stack 256
+.data
+Nx	db	40
+Ny	db	65
+Na	db	25
+Nb	db	16
+Nn	db	?
+ost	db	?
+tab db '0123456789abcdef'
+rez	db	'**h$'
+newtab db '',10,13,'$' 
+.code
+main:	mov ax, @data
+		mov ds, ax
+		.386
+		xor ax,ax
+		mov al,Nx
+		mov cl,Ny
+		
+		mul cl
+		mov bx,ax
+		
+		xor ax,ax
+		xor cl,cl
+		mov al,Nb
+		mov cl,Na
+		mul cx
+
+		
+		sub bx,ax
+		mov dx,ax
+		
+		xor ax,ax
+		xor dx,dx
+		
+		mov al,Na
+		mov dl,Nb
+		add al, dl
+		mov dl, al
+		mov ax, bx
+		
+		div dl
+
+		mov Nn,al
+		mov	ost, ah
+		
+		xor ax,ax
+		mov al,Nn
+		push ax
+		shr al,4
+		lea bx,tab
+		xlat
+		mov rez,al
+		pop ax
+		and ax,0Fh
+		xlat
+		mov rez+1,al
+		
+		mov ah,9
+		lea dx,rez
+		int 21h
+		
+		mov ah,9
+		lea dx,newtab
+		int 21h
+		
+		
+		mov al,Nn
+		mov cx,8
+		mov ah,2
+		mov bl,al
+		m1: rol bl,1
+			mov dl,0
+			adc dl,'0'
+			int 21h
+		loop m1
+		
+		mov ah, 7
+		int 21h
+		mov ax, 4c00h
+		int 21h
+		end main
